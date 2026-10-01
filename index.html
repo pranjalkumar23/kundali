@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kundali — Jyotisha, rooted in tradition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Rozha+One&family=Hind:wght@400;500;600&family=Baloo+2:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#170f0a;
+    --panel:#2a1b10;
+    --panel-2:#331f10;
+    --marigold:#e8a33d;
+    --marigold-light:#f4c869;
+    --terracotta:#c1502f;
+    --cream:#f6ecd9;
+    --cream-dim:#cfbfa6;
+    --gold-line:rgba(232,163,61,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--cream);
+    font-family:'Hind',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .icon{width:1em;height:1em;display:inline-block;vertical-align:middle;}
+  #bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 32px;position:relative;z-index:1;}
+  a{color:inherit;text-decoration:none;}
+
+  .texture{position:relative;z-index:1;}
+
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 0;border-bottom:1px solid var(--gold-line);
+  }
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Rozha One',serif;font-size:22px;letter-spacing:0.5px;color:var(--cream);}
+  .logo .mark{
+    width:30px;height:30px;border-radius:50%;
+    background:conic-gradient(from 0deg, var(--marigold), var(--terracotta), var(--marigold));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Yatra One',serif;font-size:15px;color:var(--bg);
+    animation:spin-slow 8s linear infinite;
+  }
+  nav{display:flex;gap:32px;font-size:15px;color:var(--cream-dim);}
+  nav a{transition:color .2s ease;}
+  nav a:hover{color:var(--marigold-light);}
+  .cta-row{display:flex;gap:12px;align-items:center;}
+  .btn{
+    padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;
+    border:1px solid var(--gold-line);cursor:pointer;
+    transition:transform .18s ease, box-shadow .25s ease, border-color .2s ease;
+    display:inline-block;
+  }
+  .btn:hover{transform:translateY(-2px);border-color:var(--marigold);}
+  .btn:active{transform:translateY(0) scale(.98);}
+  .btn-primary{background:var(--marigold);color:#2a1608;border:none;box-shadow:0 0 0 rgba(232,163,61,0);}
+  .btn-primary:hover{box-shadow:0 6px 24px rgba(232,163,61,0.35);}
+  .btn-ghost{color:var(--cream);}
+
+  .hero{padding:90px 0 40px;text-align:center;border-top:none;}
+  .eyebrow{
+    font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--marigold-light);
+    display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:22px;
+  }
+  .eyebrow .icon{font-size:16px;}
+  h1.headline{
+    font-family:'Rozha One',serif;
+    font-size:64px;line-height:1.12;margin:0 0 8px;color:var(--cream);
+  }
+  h1.headline .accent{
+    font-family:'Yatra One',serif;
+    display:block;
+    font-size:60px;
+    background:linear-gradient(100deg, var(--marigold) 20%, var(--marigold-light) 40%, #fff6df 50%, var(--marigold-light) 60%, var(--marigold) 80%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shimmer 7s linear infinite;
+  }
+  .subhead{
+    max-width:600px;margin:22px auto 34px;font-size:17px;line-height:1.6;color:var(--cream-dim);
+  }
+  .hero-ctas{display:flex;gap:14px;justify-content:center;margin-bottom:16px;}
+  .hero-note{font-size:13px;color:var(--cream-dim);opacity:0.8;}
+
+  .hero-fade{opacity:0;transform:translateY(16px);animation:rise .8s cubic-bezier(.2,.8,.2,1) forwards;}
+
+  .ring-graphic{margin:56px auto 0;width:300px;height:300px;position:relative;}
+  .ring{
+    position:absolute;border-radius:50%;border:1px dashed var(--gold-line);
+    top:50%;left:50%;
+  }
+  .ring.r1{width:280px;height:280px;margin:-140px 0 0 -140px;}
+  .ring.r2{width:200px;height:200px;margin:-100px 0 0 -100px;}
+  .ring.r3{width:120px;height:120px;margin:-60px 0 0 -60px;border-style:solid;}
+  .sun-center{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:60px;height:60px;border-radius:50%;
+    background:radial-gradient(circle, var(--marigold-light), var(--terracotta));
+    animation:pulse-glow 3.2s ease-in-out infinite;
+  }
+  .orbit{position:absolute;top:50%;left:50%;}
+  .orbit-1{width:280px;height:280px;margin:-140px 0 0 -140px;animation:spin 85s linear infinite;}
+  .orbit-2{width:200px;height:200px;margin:-100px 0 0 -100px;animation:spin 50s linear infinite reverse;}
+  .orbit-3{width:120px;height:120px;margin:-60px 0 0 -60px;animation:spin 26s linear infinite;}
+  .planet-pos{position:absolute;top:0;left:50%;transform:translate(-50%,-50%);}
+  .planet-pos.bottom{top:100%;}
+  .glyph{
+    position:relative;
+    display:flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:50%;
+    background:radial-gradient(circle at 32% 30%, #fff2cf, var(--marigold) 55%, var(--terracotta) 100%);
+    box-shadow:0 0 14px 3px rgba(232,163,61,0.55);
+    color:rgba(30,15,5,0.55);
+  }
+  .orbit-1 .glyph{animation:spin 85s linear infinite reverse;}
+  .orbit-2 .glyph{animation:spin 50s linear infinite;}
+  .orbit-3 .glyph{animation:spin 26s linear infinite reverse;}
+  .glyph .icon{width:14px;height:14px;opacity:0.55;}
+
+  .glyph[title="Moon"]{background:radial-gradient(circle at 32% 30%, #ffffff, #cfd8e6 55%, #8a94ab 100%);box-shadow:0 0 14px 3px rgba(210,220,240,0.55);}
+  .glyph[title="Mars"]{background:radial-gradient(circle at 32% 30%, #ffb199, #e0552f 55%, #9c2f16 100%);box-shadow:0 0 14px 3px rgba(224,85,47,0.55);}
+  .glyph[title="Jupiter"]{background:radial-gradient(circle at 32% 30%, #ffe3b0, #d98f3f 45%, #8a5a24 100%);box-shadow:0 0 14px 3px rgba(217,143,63,0.5);}
+  .glyph[title="Saturn"]{background:radial-gradient(circle at 32% 30%, #fff1cf, #e0b45c 50%, #9c7530 100%);box-shadow:0 0 14px 3px rgba(224,180,92,0.5);}
+  .glyph[title="Saturn"]::after{
+    content:"";position:absolute;top:50%;left:50%;width:52px;height:16px;
+    border:2px solid rgba(240,200,120,0.7);border-radius:50%;
+    transform:translate(-50%,-50%) rotate(-15deg);pointer-events:none;
+  }
+  .glyph[title="Rahu"]{background:radial-gradient(circle at 32% 30%, #cbb8e8, #6c5b8f 55%, #2e2540 100%);box-shadow:0 0 14px 3px rgba(108,91,143,0.55);}
+  .glyph[title="Sun"]{background:radial-gradient(circle at 32% 30%, #fff8e0, #ffcf6b 45%, var(--terracotta) 100%);box-shadow:0 0 18px 5px rgba(255,207,107,0.65);}
+
+  .pill-marquee{margin-top:60px;overflow:hidden;border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line);padding:16px 0;}
+  .pill-track{display:flex;gap:12px;width:max-content;animation:marquee 26s linear infinite;}
+  .pill-marquee:hover .pill-track{animation-play-state:paused;}
+  .pill{
+    font-size:12.5px;letter-spacing:0.5px;color:var(--cream-dim);white-space:nowrap;
+    border:1px solid var(--gold-line);border-radius:999px;padding:7px 16px;
+  }
+
+  section{padding:80px 0;border-top:1px solid var(--gold-line);}
+  .section-tag{
+    font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--marigold-light);
+    text-align:center;margin-bottom:14px;
+  }
+  .section-title{
+    font-family:'Rozha One',serif;font-size:36px;text-align:center;margin:0 0 48px;color:var(--cream);
+  }
+
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.8,.2,1), transform .7s cubic-bezier(.2,.8,.2,1);}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .feature-card{
+    background:var(--panel);border:1px solid var(--gold-line);border-radius:14px;padding:26px 24px;
+    transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .3s ease;
+  }
+  .feature-card:hover{transform:translateY(-6px);border-color:var(--marigold);box-shadow:0 14px 34px rgba(0,0,0,0.35);}
+  .feature-card .ficon{
+    width:42px;height:42px;border-radius:10px;background:var(--panel-2);
+    display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+    color:var(--marigold-light);font-size:19px;font-family:'Yatra One',serif;
+  }
+  .feature-card .ficon .icon{width:20px;height:20px;}
+  .feature-card h3{font-family:'Baloo 2',sans-serif;font-weight:600;font-size:17px;margin:0 0 8px;color:var(--cream);}
+  .feature-card p{font-size:14px;line-height:1.6;color:var(--cream-dim);margin:0;}
+  .feature-card.highlight{border-color:var(--marigold);background:linear-gradient(160deg, var(--panel-2), var(--panel));}
+  .badge-new{
+    display:inline-block;font-size:10.5px;letter-spacing:0.5px;text-transform:uppercase;
+    color:#2a1608;background:var(--marigold);padding:3px 8px;border-radius:999px;margin-bottom:10px;
+  }
+
+  .reading-card{
+    background:var(--panel);border:1px solid var(--gold-line);border-radius:16px;padding:34px;max-width:760px;margin:0 auto;
+  }
+  .reading-q{font-family:'Rozha One',serif;font-size:22px;color:var(--cream);margin:0 0 6px;}
+  .reading-meta{font-size:13px;color:var(--cream-dim);margin-bottom:22px;}
+  .reading-row{display:flex;gap:16px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--gold-line);}
+  .reading-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+  .reading-icon{
+    flex:0 0 auto;width:36px;height:36px;border-radius:8px;background:var(--panel-2);
+    display:flex;align-items:center;justify-content:center;color:var(--marigold-light);font-family:'Yatra One',serif;font-size:16px;
+  }
+  .reading-icon .icon{width:17px;height:17px;}
+  .reading-row h4{margin:0 0 4px;font-size:15px;color:var(--cream);font-family:'Baloo 2',sans-serif;font-weight:600;}
+  .reading-row p{margin:0;font-size:13.5px;line-height:1.6;color:var(--cream-dim);}
+  .verdict-box{
+    margin-top:20px;background:var(--panel-2);border-left:3px solid var(--marigold);border-radius:0 10px 10px 0;padding:18px 20px;
+  }
+  .verdict-box .tag{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--marigold-light);margin-bottom:8px;}
+  .verdict-box p{margin:0;font-size:14.5px;line-height:1.65;color:var(--cream);}
+  .score-line{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+  .score-num{font-family:'Rozha One',serif;font-size:26px;color:var(--marigold-light);}
+  .score-bar{height:5px;border-radius:4px;background:var(--panel-2);overflow:hidden;margin-top:8px;}
+  .score-fill{height:100%;width:0;background:linear-gradient(90deg,var(--terracotta),var(--marigold-light));border-radius:4px;transition:width 1.4s cubic-bezier(.2,.8,.2,1);}
+
+  .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .t-card{background:var(--panel);border:1px solid var(--gold-line);border-radius:12px;padding:22px;transition:transform .3s ease, border-color .3s ease;}
+  .t-card:hover{transform:translateY(-4px);border-color:var(--marigold);}
+  .t-card p.quote{font-size:14px;line-height:1.6;color:var(--cream-dim);margin:0 0 14px;}
+  .t-card .who{font-size:13px;color:var(--marigold-light);font-weight:600;}
+
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .price-card{background:var(--panel);border:1px solid var(--gold-line);border-radius:16px;padding:30px 26px;text-align:center;position:relative;transition:transform .3s ease, box-shadow .3s ease;}
+  .price-card:hover{transform:translateY(-6px);box-shadow:0 14px 34px rgba(0,0,0,0.35);}
+  .price-card.popular{border-color:var(--marigold);}
+  .price-card .badge-new{position:absolute;top:-11px;left:50%;transform:translateX(-50%);}
+  .price-card h3{font-family:'Baloo 2',sans-serif;font-size:18px;margin:6px 0 4px;color:var(--cream);}
+  .price-card .price{font-family:'Rozha One',serif;font-size:38px;color:var(--marigold-light);margin:10px 0 2px;}
+  .price-card .per{font-size:12.5px;color:var(--cream-dim);margin-bottom:18px;}
+  .price-card ul{list-style:none;padding:0;margin:0 0 22px;text-align:left;}
+  .price-card li{font-size:13.5px;color:var(--cream-dim);padding:6px 0;display:flex;gap:8px;}
+  .price-card li:before{content:"✓";color:var(--marigold-light);}
+  .upi-note{font-size:12px;color:var(--cream-dim);text-align:center;margin-top:14px;}
+
+  footer{padding:50px 0;text-align:center;color:var(--cream-dim);font-size:13px;}
+  footer .langs{margin-top:10px;font-size:12px;color:var(--marigold-light);}
+
+  @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @keyframes spin-slow{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @keyframes pulse-glow{
+    0%,100%{box-shadow:0 0 30px 6px rgba(232,163,61,0.22);transform:translate(-50%,-50%) scale(1);}
+    50%{box-shadow:0 0 46px 14px rgba(232,163,61,0.38);transform:translate(-50%,-50%) scale(1.05);}
+  }
+  @keyframes shimmer{0%{background-position:0% 0;}100%{background-position:250% 0;}}
+  @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes rise{to{opacity:1;transform:translateY(0);}}
+
+  @media (max-width:900px){
+    .features,.testimonials,.pricing{grid-template-columns:1fr;}
+    h1.headline{font-size:42px;}
+    h1.headline .accent{font-size:40px;}
+    nav{display:none;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="texture">
+<div class="wrap">
+  <header>
+    <div class="logo"><span class="mark">क</span>Kundali</div>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#panchang">Panchang</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <div class="cta-row">
+      <a class="btn btn-ghost" href="#">Sign in</a>
+      <a class="btn btn-primary" href="#">See pricing</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow hero-fade" style="animation-delay:.05s">
+      <span class="icon" aria-hidden="true">ॐ</span> Jyotisha · Panchang · Kundali · EST. 2026
+    </div>
+    <h1 class="headline hero-fade" style="animation-delay:.15s">Your life, read<br/><span class="accent">the way your dadi would trust</span></h1>
+    <p class="subhead hero-fade" style="animation-delay:.28s">Vedic astrology, Panchang timing, and Kundali matching — grounded in tradition, explained in plain Hindi or English, with a verdict you can act on today.</p>
+    <div class="hero-ctas hero-fade" style="animation-delay:.4s">
+      <a class="btn btn-primary" href="#pricing">See transparent ₹ pricing</a>
+      <a class="btn btn-ghost" style="border:1px solid var(--gold-line)" href="#">Try 3 free readings</a>
+    </div>
+    <div class="hero-note hero-fade" style="animation-delay:.5s">No sign-up to see pricing · Available in Hindi, Tamil, Telugu, Bengali, Marathi</div>
+
+    <div class="ring-graphic hero-fade" style="animation-delay:.55s">
+      <div class="ring r1"></div>
+      <div class="ring r2"></div>
+      <div class="ring r3"></div>
+      <div class="sun-center"></div>
+
+      <div class="orbit orbit-1">
+        <div class="planet-pos"><div class="glyph" title="Saturn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="3" x2="8" y2="16"/><line x1="5" y1="6" x2="11" y2="6"/><path d="M8 15c0 3 2 4 4 4s4-1.6 4-4-2-3-4-2"/></svg></div></div>
+        <div class="planet-pos bottom"><div class="glyph" title="Jupiter"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7c0 2.6 2.2 3.4 4.4 3.4H16"/><line x1="14.5" y1="3.5" x2="14.5" y2="17"/><line x1="8" y1="20" x2="8" y2="10"/><line x1="5" y1="14.5" x2="11" y2="14.5"/></svg></div></div>
+      </div>
+
+      <div class="orbit orbit-2">
+        <div class="planet-pos"><div class="glyph" title="Mars"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="6"/><line x1="14.2" y1="9.8" x2="20" y2="4"/><polyline points="14.5 4 20 4 20 9.5"/></svg></div></div>
+        <div class="planet-pos bottom"><div class="glyph" title="Rahu"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 10a7 7 0 0 1 14 0"/><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></div></div>
+      </div>
+
+      <div class="orbit orbit-3">
+        <div class="planet-pos"><div class="glyph" title="Moon"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20 12.6A8.4 8.4 0 1 1 10.4 3a6.7 6.7 0 0 0 9.6 9.6z"/></svg></div></div>
+        <div class="planet-pos bottom"><div class="glyph" title="Sun"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.2"/><g stroke-linecap="round"><line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/><line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/></g></svg></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="pill-marquee">
+    <div class="pill-track">
+      <span class="pill">VEDIC · KP · NAADI</span>
+      <span class="pill">SHUBH MUHURAT</span>
+      <span class="pill">KUNDALI MILAN</span>
+      <span class="pill">DAILY PANCHANG</span>
+      <span class="pill">HINDI · TAMIL · TELUGU</span>
+      <span class="pill">UPI READY</span>
+      <span class="pill">VEDIC · KP · NAADI</span>
+      <span class="pill">SHUBH MUHURAT</span>
+      <span class="pill">KUNDALI MILAN</span>
+      <span class="pill">DAILY PANCHANG</span>
+      <span class="pill">HINDI · TAMIL · TELUGU</span>
+      <span class="pill">UPI READY</span>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="section-tag reveal">What's inside</div>
+    <h2 class="section-title reveal">Built around how India actually uses astrology</h2>
+    <div class="features">
+      <div class="feature-card highlight reveal">
+        <span class="badge-new">Not on other apps</span>
+        <div class="ficon" aria-hidden="true">ॐ</div>
+        <h3>Shubh Muhurat finder</h3>
+        <p>Find the next auspicious window for a wedding date, griha pravesh, naming ceremony, or new business — ranked by Panchang, Tithi and Nakshatra fit.</p>
+      </div>
+      <div class="feature-card highlight reveal">
+        <span class="badge-new">Not on other apps</span>
+        <div class="ficon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.3-9C1.2 7.7 3 4.5 6.3 4.2 8.6 4 11 5.6 12 8c1-2.4 3.4-4 5.7-3.8 3.3.3 5.1 3.5 3.6 6.8C18 15.6 12 20 12 20z"/></svg></div>
+        <h3>Kundali Milan</h3>
+        <p>Full Guna Milan compatibility scoring for two birth charts, with the Mangal Dosha and Nadi checks families actually ask an astrologer about.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon" aria-hidden="true">आ</div>
+        <h3>Reads in your language</h3>
+        <p>Every verdict is delivered in Hindi, Tamil, Telugu, Bengali or Marathi — not machine-translated English, written for how the terms are actually used.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.2"/><g stroke-linecap="round"><line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/><line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/><line x1="4.9" y1="4.9" x2="6.7" y2="6.7"/><line x1="17.3" y1="17.3" x2="19.1" y2="19.1"/><line x1="4.9" y1="19.1" x2="6.7" y2="17.3"/><line x1="17.3" y1="6.7" x2="19.1" y2="4.9"/></g></svg></div>
+        <h3>Five rooted systems</h3>
+        <p>Vedic, KP, Naadi, Prashna and Dasha-transit timing, cross-checked into one judgement — with the same rigour a family astrologer would apply.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 1 1-3.8-7.1L21 3l-1.1 3.8c.7 1.4 1.1 2.9 1.1 4.7z"/><path d="M8 10h5M8 13h7"/></svg></div>
+        <h3>Daily Panchang, on WhatsApp</h3>
+        <p>Tithi, Nakshatra, Rahu Kaal and the day's auspicious windows delivered every morning where you already check messages.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.7 5 3 7.3 8 8-5 .7-7.3 3-8 8-.7-5-3-7.3-8-8 5-.7 7.3-3 8-8z"/></svg></div>
+        <h3>Honest confidence score</h3>
+        <p>Every verdict is stress-tested against contrary signals before it's shown — so a strong reading means something.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="panchang">
+    <div class="section-tag reveal">Live example</div>
+    <h2 class="section-title reveal">A real Kundali Milan reading</h2>
+    <div class="reading-card reveal">
+      <div class="reading-q">"Is this match suitable — Ananya (Chennai) and Rohan (Pune)?"</div>
+      <div class="reading-meta">Guna Milan · Anonymised · Real format</div>
+
+      <div class="reading-row">
+        <div class="reading-icon" aria-hidden="true">ॐ</div>
+        <div style="flex:1">
+          <div class="score-line"><span class="score-num">27 / 36</span><span style="font-size:13px;color:var(--cream-dim)">Guna Milan score</span></div>
+          <p>Strong compatibility across Varna, Vashya, Tara and Yoni kootas. This falls comfortably in the range traditionally considered favourable for marriage.</p>
+          <div class="score-bar"><div class="score-fill" data-target="75"></div></div>
+        </div>
+      </div>
+      <div class="reading-row">
+        <div class="reading-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="6"/><line x1="14.2" y1="9.8" x2="20" y2="4"/><polyline points="14.5 4 20 4 20 9.5"/></svg></div>
+        <div>
+          <h4>Mangal Dosha check</h4>
+          <p>Mild Mangal Dosha present in Ananya's chart, fully cancelled by Rohan's Mars placement in the 12th house — no remedy required.</p>
+        </div>
+      </div>
+      <div class="reading-row">
+        <div class="reading-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7c0 2.6 2.2 3.4 4.4 3.4H16"/><line x1="14.5" y1="3.5" x2="14.5" y2="17"/><line x1="8" y1="20" x2="8" y2="10"/><line x1="5" y1="14.5" x2="11" y2="14.5"/></svg></div>
+        <div>
+          <h4>Suggested muhurat window</h4>
+          <p>Two auspicious wedding windows this year fall in the second week of November and the third week of February, both clear of Guru or Shukra Asta.</p>
+        </div>
+      </div>
+
+      <div class="verdict-box">
+        <div class="tag">Final verdict · Strong match</div>
+        <p>27/36 Guna Milan with a self-cancelling Mangal Dosha is a favourable foundation. Proceed with confidence — align the ceremony to the November or February window for the smoothest start.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-tag reveal">Seekers speak</div>
+    <h2 class="section-title reveal">What families are saying</h2>
+    <div class="testimonials">
+      <div class="t-card reveal">
+        <p class="quote">"We were choosing between two Muhurat dates for my sister's wedding. It matched exactly what our family pandit suggested — down to the Nakshatra."</p>
+        <div class="who">— Priya K., Coimbatore</div>
+      </div>
+      <div class="t-card reveal">
+        <p class="quote">"Kundali Milan in Tamil, not translated English. That alone made my mother trust the reading enough to share it with the other family."</p>
+        <div class="who">— Karthik S., Madurai</div>
+      </div>
+      <div class="t-card reveal">
+        <p class="quote">"The daily Panchang on WhatsApp replaced the calendar that used to hang in our kitchen. Rahu Kaal alerts before I even ask."</p>
+        <div class="who">— Sunita R., Lucknow</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="section-tag reveal">Transparent by design</div>
+    <h2 class="section-title reveal">No sign-up to see pricing</h2>
+    <div class="pricing">
+      <div class="price-card reveal">
+        <h3>Seeker</h3>
+        <div class="price">₹0</div>
+        <div class="per">forever · 3 credits</div>
+        <ul>
+          <li>3 oracle readings</li>
+          <li>Vedic + KP analysis</li>
+          <li>Daily Panchang</li>
+          <li>Hindi + English</li>
+        </ul>
+        <a class="btn btn-ghost" style="display:block;border:1px solid var(--gold-line)" href="#">Start free</a>
+      </div>
+      <div class="price-card popular reveal">
+        <span class="badge-new">Most popular</span>
+        <h3>Griha</h3>
+        <div class="price">₹249</div>
+        <div class="per">per month · 20 credits</div>
+        <ul>
+          <li>Kundali Milan matching</li>
+          <li>Shubh Muhurat finder</li>
+          <li>WhatsApp Panchang</li>
+          <li>5 regional languages</li>
+        </ul>
+        <a class="btn btn-primary" style="display:block" href="#">Begin your journey</a>
+      </div>
+      <div class="price-card reveal">
+        <h3>Kul Purohit</h3>
+        <div class="price">₹799</div>
+        <div class="per">per month · unlimited</div>
+        <ul>
+          <li>Unlimited readings</li>
+          <li>Full family charts</li>
+          <li>Priority pandit channel</li>
+          <li>Lifetime archive</li>
+        </ul>
+        <a class="btn btn-ghost" style="display:block;border:1px solid var(--gold-line)" href="#">Go unlimited</a>
+      </div>
+    </div>
+    <div class="upi-note">Pay by UPI, cards, or netbanking · Cancel anytime</div>
+  </section>
+
+  <footer>
+    <div>Kundali — Jyotisha, rooted in tradition. Not a substitute for professional advice.</div>
+    <div class="langs">हिन्दी · தமிழ் · తెలుగు · বাংলা · मराठी · English</div>
+  </footer>
+</div>
+</div>
+
+<script>
+(function(){
+  var canvas = document.getElementById('bg-canvas');
+  var ctx = canvas.getContext('2d');
+  var stars = [], petals = [];
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function initStars(){
+    stars = [];
+    var count = Math.min(200, Math.floor((canvas.width * canvas.height) / 6500));
+    for(var i=0;i<count;i++){
+      var bright = Math.random() < 0.14;
+      stars.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: bright ? (Math.random()*1.3 + 1.4) : (Math.random()*1.1 + 0.4),
+        bright: bright,
+        phase: Math.random()*Math.PI*2,
+        speed: Math.random()*0.02 + 0.008
+      });
+    }
+  }
+  var shootingStars = [];
+  var nextShootIn = 60 + Math.random()*90;
+  function spawnShootingStar(){
+    var startX = Math.random()*canvas.width*0.7 + canvas.width*0.1;
+    var startY = Math.random()*canvas.height*0.35;
+    var angle = Math.PI*0.22 + Math.random()*0.18;
+    var speed = 9 + Math.random()*5;
+    shootingStars.push({
+      x: startX, y: startY,
+      vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
+      life: 0, maxLife: 26 + Math.random()*10
+    });
+  }
+  function initPetals(){
+    petals = [];
+    var count = 16;
+    for(var i=0;i<count;i++){
+      petals.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        size: Math.random()*5 + 4,
+        rot: Math.random()*Math.PI*2,
+        vy: Math.random()*0.15 + 0.05,
+        vx: Math.random()*0.2 - 0.1,
+        vr: (Math.random()*0.01 - 0.005),
+        hue: Math.random() > 0.5 ? '244,200,105' : '232,120,70',
+        alpha: Math.random()*0.35 + 0.5
+      });
+    }
+  }
+  initStars();
+  initPetals();
+
+  var t = 0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    for(var i=0;i<stars.length;i++){
+      var s = stars[i];
+      var tw = 0.5 + 0.5*Math.sin(t*s.speed*10 + s.phase);
+      var a = s.bright ? (0.55 + tw*0.45) : (0.3 + tw*0.6);
+      if(s.bright){
+        ctx.beginPath();
+        var glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r*5);
+        glow.addColorStop(0, 'rgba(255,250,235,' + (a*0.55) + ')');
+        glow.addColorStop(1, 'rgba(255,250,235,0)');
+        ctx.fillStyle = glow;
+        ctx.arc(s.x, s.y, s.r*5, 0, Math.PI*2);
+        ctx.fill();
+      }
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,252,242,' + a + ')';
+      ctx.fill();
+    }
+
+    if(!reduced){
+      nextShootIn -= 1;
+      if(nextShootIn <= 0){ spawnShootingStar(); nextShootIn = 140 + Math.random()*180; }
+    }
+    for(var k=shootingStars.length-1;k>=0;k--){
+      var sh = shootingStars[k];
+      var progress = sh.life / sh.maxLife;
+      var fade = progress < 0.15 ? progress/0.15 : (1 - (progress-0.15)/0.85);
+      var tailX = sh.x - sh.vx*5.5, tailY = sh.y - sh.vy*5.5;
+      var grad = ctx.createLinearGradient(sh.x, sh.y, tailX, tailY);
+      grad.addColorStop(0, 'rgba(255,250,235,' + (0.95*fade) + ')');
+      grad.addColorStop(1, 'rgba(255,250,235,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(sh.x, sh.y);
+      ctx.lineTo(tailX, tailY);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255,255,245,' + fade + ')';
+      ctx.arc(sh.x, sh.y, 1.6, 0, Math.PI*2);
+      ctx.fill();
+      sh.x += sh.vx; sh.y += sh.vy; sh.life += 1;
+      if(sh.life >= sh.maxLife) shootingStars.splice(k,1);
+    }
+
+    for(var j=0;j<petals.length;j++){
+      var p = petals[j];
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.beginPath();
+      ctx.ellipse(0,0,p.size, p.size*0.55, 0, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(' + p.hue + ',' + p.alpha + ')';
+      ctx.shadowColor = 'rgba(' + p.hue + ',0.9)';
+      ctx.shadowBlur = 6;
+      ctx.fill();
+      ctx.restore();
+
+      if(!reduced){
+        p.y += p.vy;
+        p.x += p.vx + Math.sin(t*0.5 + j)*0.05;
+        p.rot += p.vr;
+        if(p.y > canvas.height + 10){ p.y = -10; p.x = Math.random()*canvas.width; }
+        if(p.x > canvas.width + 10) p.x = -10;
+        if(p.x < -10) p.x = canvas.width + 10;
+      }
+    }
+    t += 1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry, idx){
+      if(entry.isIntersecting){
+        entry.target.style.transitionDelay = (idx % 6) * 0.06 + 's';
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  var scoreObserved = false;
+  var scoreIo = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting && !scoreObserved){
+        scoreObserved = true;
+        document.querySelectorAll('.score-fill').forEach(function(bar){
+          bar.style.width = bar.getAttribute('data-target') + '%';
+        });
+      }
+    });
+  }, {threshold:0.4});
+  var scoreEl = document.querySelector('.score-bar');
+  if(scoreEl) scoreIo.observe(scoreEl);
+})();
+</script>
+
+</body>
+</html>
